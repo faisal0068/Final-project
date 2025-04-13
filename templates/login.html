@@ -1,22 +1,81 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="row justify-content-center">
+<!-- Container for login form -->
+<div class="row justify-content-center mt-5">
   <div class="col-md-6">
-    <h3 class="mb-4 text-center">🔐 Login</h3>
-    <form method="POST">
+    <h3 class="mb-4 text-center text-primary animate__animated animate__fadeIn">🔐 Login</h3>
+    
+    <!-- Login Form -->
+    <form method="POST" class="animate__animated animate__fadeIn animate__delay-1s">
       <div class="mb-3">
-        <label class="form-label">Username</label>
-        <input type="text" class="form-control" name="username" required>
+        <label class="form-label" for="username">Username</label>
+        <input type="text" class="form-control input-animate" name="username" id="username" required>
       </div>
+      
       <div class="mb-3">
-        <label class="form-label">Password</label>
-        <input type="password" class="form-control" name="password" required>
+        <label class="form-label" for="password">Password</label>
+        <input type="password" class="form-control input-animate" name="password" id="password" required>
       </div>
-      <button type="submit" class="btn btn-primary w-100">Login</button>
+      
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary w-100 btn-animate">Login</button>
     </form>
+
+    <!-- Register link -->
     <p class="mt-3 text-center">
-      Don't have an account? <a href="{{ url_for('register') }}">Register</a>
+      Don't have an account? <a href="{{ url_for('register') }}" class="text-decoration-none">Register</a>
     </p>
   </div>
 </div>
+
+<!-- Add animation classes via external library (Animate.css) -->
+<!-- Include Animate.css for animations -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+  /* Custom animation effects for input fields */
+  .input-animate {
+    transition: transform 0.3s ease;
+  }
+
+  .input-animate:focus {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+  }
+
+  /* Button animation */
+  .btn-animate {
+    transition: transform 0.3s ease;
+  }
+
+  .btn-animate:hover {
+    transform: scale(1.05);
+    background-color: #0056b3;
+  }
+
+  /* Styling for the form */
+  form {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-label {
+    font-weight: bold;
+  }
+  
+  /* Styling for the 'Register' link */
+  .text-center a {
+    color: #007bff;
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  .text-center a:hover {
+    text-decoration: underline;
+  }
+</style>
+
 {% endblock %}

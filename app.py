@@ -46,22 +46,29 @@ def register():
             flash("Username already exists.", "danger")
     return redirect(url_for('index'))
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    username = request.form['username']
-    password = request.form['password']
-    with sqlite3.connect('storage.db') as conn:
-        c = conn.cursor()
-        c.execute('SELECT * FROM users WHERE username = ?', (username,))
-        user = c.fetchone()
-        if user and check_password_hash(user[2], password):
-            session['user_id'] = user[0]
-            session['username'] = user[1]
-            flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))
-        else:
-            flash('Invalid credentials', 'danger')
-            return redirect(url_for('index'))
+    if request.method == 'POST':
+        # Handle form submission
+        username = request.form['username']
+        password = request.form['password']
+        
+        with sqlite3.connect('storage.db') as conn:
+            c = conn.cursor()
+            c.execute('SELECT * FROM users WHERE username = ?', (username,))
+            user = c.fetchone()
+
+            if user and check_password_hash(user[2], password):
+                session['user_id'] = user[0]
+                session['username'] = user[1]
+                flash('Login successful!', 'success')
+                return redirect(url_for('dashboard'))
+            else:
+                flash('Invalid credentials', 'danger')
+                return redirect(url_for('login'))
+
+    # If it's a GET request, show the login page
+    return render_template('login.html')
 
 @app.route('/dashboard')
 def dashboard():
