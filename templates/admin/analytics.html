@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<h4>Analytics - File Uploads</h4>
+<canvas id="fileAnalyticsChart"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const fileData = { data , tojson };
+  const labels = fileData.map(item => item.username);
+  const values = fileData.map(item => item.files_count);
+
+  new Chart(document.getElementById('fileAnalyticsChart'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Files Uploaded',
+        data: values,
+        backgroundColor: 'rgba(54, 162, 235, 0.6)'
+      }]
+    }
+  });
+</script>
+{% endblock %}

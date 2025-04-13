@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+  <div class="col-md-4">
+    <h4>Admin Panel</h4>
+    <ul class="list-group">
+      <li class="list-group-item">
+        <a href="{{ url_for('admin_dashboard') }}">User Management</a>
+      </li>
+      <li class="list-group-item">
+        <a href="{{ url_for('admin_logs') }}">View Logs</a>
+      </li>
+      <li class="list-group-item">
+        <a href="{{ url_for('admin_analytics') }}">Analytics</a>
+      </li>
+    </ul>
+  </div>
+  <div class="col-md-8">
+    <h4>Manage Users</h4>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role }}</td>
+          <td>
+            {% if user.role != 'admin' %}
+              <a href="{{ url_for('make_admin', user_id=user.id) }}" class="btn btn-warning btn-sm">Make Admin</a>
+            {% endif %}
+            <a href="{{ url_for('delete_user', user_id=user.id) }}" class="btn btn-danger btn-sm">Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

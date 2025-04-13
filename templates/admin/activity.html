@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<h4>User Activity Timeline</h4>
+<canvas id="activityTimelineChart"></canvas>
+<script>
+  const activities = { activities , tojson };
+  const activityLabels = activities.map(a => a.date);
+  const activityCounts = activities.map(a => a.count);
+
+  new Chart(document.getElementById('activityTimelineChart'), {
+    type: 'line',
+    data: {
+      labels: activityLabels,
+      datasets: [{
+        label: 'Activity Count',
+        data: activityCounts,
+        borderColor: 'rgba(255, 99, 132, 1)',
+        fill: false
+      }]
+    }
+  });
+</script>
+{% endblock %}
