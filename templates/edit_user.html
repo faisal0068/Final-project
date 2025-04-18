@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Edit User</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label>Username</label>
+            <input type="text" name="username" class="form-control" value="{{ user[1] }}" required>
+        </div>
+        <div class="mb-3">
+            <label>Email</label>
+            <input type="email" name="email" class="form-control" value="{{ user[2] }}" required>
+        </div>
+        <div class="mb-3">
+            <label>Role</label>
+            <select name="role" class="form-control">
+                <option value="user" {% if user[3] == 'user' %}selected{% endif %}>User</option>
+                <option value="admin" {% if user[3] == 'admin' %}selected{% endif %}>Admin</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">Update</button>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

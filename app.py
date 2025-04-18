@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user, UserMixin
 from werkzeug.utils import secure_filename
-from werkzeug.security import check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from flask import session, redirect, url_for, flash
 import os
@@ -92,6 +92,60 @@ def register():
         return redirect(url_for('login'))
 
     return render_template('register.html')
+
+@app.route('/admin')
+def admin_dashboard():
+    if 'user_id' not in session or session.get('role') != 'admin':
+        flash('Access denied.', 'danger')
+        return redirect(url_for('login'))
+
+    conn = sqlite3.connect('your_database.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT id, username, email, role, created_at FROM users')
+    users = cursor.fetchall()
+    conn.close()
+
+    return render_template('admin_dashboard.html', users=users)
+
+@app.route('/admin/edit/<int:user_id>', methods=['GET', 'POST'])
+def edit_user(user_id):
+    if 'user_id' not in session or session.get('role') != 'admin':
+        flash('Access denied.', 'danger')
+        return redirect(url_for('login'))
+
+    conn = sqlite3.connect('your_database.db')
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        role = request.form['role']
+        cursor.execute('UPDATE users SET username = ?, email = ?, role = ? WHERE id = ?', (username, email, role, user_id))
+        conn.commit()
+        conn.close()
+        flash('User updated successfully!', 'success')
+        return redirect(url_for('admin_dashboard'))
+
+    cursor.execute('SELECT id, username, email, role FROM users WHERE id = ?', (user_id,))
+    user = cursor.fetchone()
+    conn.close()
+
+    return render_template('edit_user.html', user=user)
+
+@app.route('/admin/delete/<int:user_id>')
+def delete_user(user_id):
+    if 'user_id' not in session or session.get('role') != 'admin':
+        flash('Access denied.', 'danger')
+        return redirect(url_for('login'))
+
+    conn = sqlite3.connect('your_database.db')
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM users WHERE id = ?', (user_id,))
+    conn.commit()
+    conn.close()
+
+    flash('User deleted successfully!', 'success')
+    return redirect(url_for('admin_dashboard'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
