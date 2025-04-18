@@ -83,9 +83,9 @@ def home():
     return "Hello, Waitress + Flask!"
 
 
-@app.route('/')
-def home():
-    return render_template('index.html')
+# @app.route('/')
+# def home():
+#     return render_template('index.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
