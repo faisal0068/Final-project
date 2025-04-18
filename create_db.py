@@ -1,7 +1,7 @@
 import sqlite3
 
 # Connect to your database
-conn = sqlite3.connect('your_database.db')  # Replace with your DB file name
+conn = sqlite3.connect('database.db')  # Replace with your DB file name
 cursor = conn.cursor()
 
 # Create users table
