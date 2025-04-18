@@ -1,42 +1,30 @@
-/* General Styles */
-body {
-    font-family: Arial, sans-serif;
-  }
-  
-  .navbar {
-    border-bottom: 1px solid #ccc;
-  }
-  
-  footer {
-    background-color: #f8f9fa;
-    padding: 10px 0;
-  }
-  
-  /* Modal Styling */
-  .modal-dialog {
-    max-width: 600px;
-  }
-  
-  .table th {
-    background-color: #f1f1f1;
-  }
-  
-  /* Dark Mode */
-  body.dark-mode {
-    background-color: #2f2f2f;
-    color: #f1f1f1;
-  }
-  
-  body.dark-mode .navbar {
-    background-color: #343a40;
-  }
-  
-  body.dark-mode footer {
-    background-color: #343a40;
-    color: #f1f1f1;
-  }
-  
-  body.dark-mode .table th {
-    background-color: #4e4e4e;
-  }
-  
+/* Toggle Button Styles */
+.theme-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #0d6efd;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  color: #fff;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  z-index: 9999;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.theme-toggle:hover {
+  background-color: #0b5ed7;
+  transform: scale(1.1);
+}
+
+/* Smooth background transition for body, navbar, footer, modals */
+body, .navbar, footer, .modal-content, .table th {
+  transition: background-color 0.4s ease, color 0.4s ease;
+}

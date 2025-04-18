@@ -1,23 +1,73 @@
+<!-- Upload Modal -->
 <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="uploadModalLabel">Upload New File</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <form method="POST" enctype="multipart/form-data">
-          <div class="modal-body">
-            <div class="mb-3">
-              <label for="file" class="form-label">Select File</label>
-              <input type="file" class="form-control" id="file" name="file" required>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Upload</button>
-          </div>
-        </form>
+  <div class="modal-dialog">
+    <div class="modal-content shadow-lg">
+      <div class="modal-header">
+        <h5 class="modal-title" id="uploadModalLabel">
+          <i class="fas fa-upload text-primary me-2"></i> Upload New File
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
+
+      <form method="POST" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <div class="modal-body">
+          <!-- Drag and Drop area -->
+          <div class="border rounded-3 p-4 text-center mb-3" id="drop-area" style="cursor: pointer; background-color: #f8f9fa;">
+            <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+            <p class="mb-2">Drag & drop your file here</p>
+            <p class="small text-muted">or click to browse</p>
+            <input type="file" class="form-control d-none" id="file" name="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx,.txt" required>
+          </div>
+
+          <!-- Selected File Name -->
+          <div id="file-chosen" class="text-center small text-muted"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-upload"></i> Upload
+          </button>
+        </div>
+      </form>
     </div>
   </div>
-  
+</div>
+
+<!-- Minimal Script to handle drag and file selection -->
+<script>
+  const dropArea = document.getElementById('drop-area');
+  const fileInput = document.getElementById('file');
+  const fileChosen = document.getElementById('file-chosen');
+
+  // Open file dialog on click
+  dropArea.addEventListener('click', () => fileInput.click());
+
+  // Update filename on select
+  fileInput.addEventListener('change', function () {
+    if (fileInput.files.length > 0) {
+      fileChosen.textContent = `Selected: ${fileInput.files[0].name}`;
+    }
+  });
+
+  // Drag-over effect
+  dropArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropArea.classList.add('bg-light');
+  });
+
+  dropArea.addEventListener('dragleave', () => {
+    dropArea.classList.remove('bg-light');
+  });
+
+  // Handle dropped file
+  dropArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    fileInput.files = e.dataTransfer.files;
+    fileChosen.textContent = `Selected: ${fileInput.files[0].name}`;
+    dropArea.classList.remove('bg-light');
+  });
+</script>
