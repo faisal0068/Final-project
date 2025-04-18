@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6">
+    <h3 class="mb-4 text-center text-primary animate__animated animate__fadeIn">✉️ Update Email</h3>
+    
+    <!-- Update Email Form -->
+    <form method="POST" id="updateEmailForm" class="animate__animated animate__fadeIn animate__delay-1s">
+      <div class="mb-3">
+        <label class="form-label" for="new_email">New Email</label>
+        <input type="email" class="form-control input-animate" name="new_email" id="new_email" required>
+      </div>
+      
+      <div class="mb-3">
+        <label class="form-label" for="password">Confirm Password</label>
+        <input type="password" class="form-control input-animate" name="password" id="password" required>
+      </div>
+      
+      <button type="submit" class="btn btn-primary w-100 btn-animate">Update Email</button>
+    </form>
+
+    <p class="mt-3 text-center">
+      <a href="{{ url_for('profile') }}" class="text-decoration-none">Back to Profile</a>
+    </p>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="toast align-items-center text-bg-{{ 'success' if category == 'success' else 'danger' }} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              {{ message }}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</div>
+
+<!-- Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<!-- Custom JavaScript for validation -->
+<script>
+document.getElementById('updateEmailForm').addEventListener('submit', function(event) {
+  const email = document.getElementById('new_email').value.trim();
+  const password = document.getElementById('password').value.trim();
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email regex
+
+  if (!emailPattern.test(email)) {
+    event.preventDefault();
+    alert('Please enter a valid email address.');
+    return;
+  }
+
+  if (!password) {
+    event.preventDefault();
+    alert('Please enter your password to confirm.');
+  }
+});
+</script>
+
+<style>
+  /* Same form input and button animation you already had */
+  .input-animate {
+    transition: transform 0.3s ease;
+  }
+
+  .input-animate:focus {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+  }
+
+  .btn-animate {
+    transition: transform 0.3s ease;
+  }
+
+  .btn-animate:hover {
+    transform: scale(1.05);
+    background-color: #0056b3;
+  }
+
+  form {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-label {
+    font-weight: bold;
+  }
+</style>
+
+{% endblock %}

@@ -196,6 +196,51 @@ def login():
 
     return render_template('login.html')
 
+@app.route('/update_email', methods=['GET', 'POST'])
+@login_required
+def update_email():
+    if request.method == 'POST':
+        new_email = request.form.get('new_email')
+        password = request.form.get('password')
+
+        if not new_email or not password:
+            flash('Please fill in all fields.', 'danger')
+            return redirect(url_for('update_email'))
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Check if the new email already exists
+        cursor.execute('SELECT id FROM users WHERE email = ?', (new_email,))
+        existing_user = cursor.fetchone()
+        if existing_user:
+            conn.close()
+            flash('This email is already registered. Please choose a different one.', 'danger')
+            return redirect(url_for('update_email'))
+
+        # Get the user's current hashed password from database
+        cursor.execute('SELECT password FROM users WHERE id = ?', (current_user.id,))
+        user_data = cursor.fetchone()
+
+        if user_data and check_password_hash(user_data['password'], password):
+            try:
+                cursor.execute('UPDATE users SET email = ? WHERE id = ?', (new_email, current_user.id))
+                conn.commit()
+                flash('Email updated successfully!', 'success')
+            except Exception as e:
+                print(f"Error updating email: {e}")
+                flash('An error occurred. Please try again.', 'danger')
+            finally:
+                conn.close()
+            return redirect(url_for('profile'))  # Redirect wherever you want
+        else:
+            conn.close()
+            flash('Incorrect password. Please try again.', 'danger')
+            return redirect(url_for('update_email'))
+
+    return render_template('update_email.html')
+
+
 
 @app.route('/logout')
 def logout():
