@@ -40,15 +40,32 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-# Dummy User Class (you should replace this with your real User model)
+# --- Real User Class ---
 class User(UserMixin):
-    def __init__(self, id):
+    def __init__(self, id, username, email, role):
         self.id = id
+        self.username = username
+        self.email = email
+        self.role = role
 
-# Dummy user loader (replace with DB query)
+    @staticmethod
+    def get(user_id):
+        conn = sqlite3.connect('your_database.db')  # your actual DB
+        cursor = conn.cursor()
+        cursor.execute('SELECT id, username, email, role FROM users WHERE id = ?', (user_id,))
+        user = cursor.fetchone()
+        conn.close()
+
+        if user:
+            return User(id=user[0], username=user[1], email=user[2], role=user[3])
+        else:
+            return None
+
+# --- Real user loader ---
 @login_manager.user_loader
 def load_user(user_id):
-    return User(user_id)
+    return User.get(user_id)
+
 
 # Routes
 
