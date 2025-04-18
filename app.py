@@ -1,13 +1,12 @@
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_user, login_required, current_user, logout_user
-from flask_bcrypt import Bcrypt
-
+from flask_migrate import Migrate
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
-bcrypt = Bcrypt(app)
+migrate = Migrate(app, db)
 
 # Setup LoginManager
 login_manager = LoginManager(app)
