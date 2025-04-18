@@ -78,7 +78,7 @@ def load_user(user_id):
 
 # Routes
 
-@app.route("/")
+@app.route("/test")
 def home():
     return "Hello, Waitress + Flask!"
 
