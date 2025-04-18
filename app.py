@@ -50,7 +50,7 @@ class User(UserMixin):
 
     @staticmethod
     def get(user_id):
-        conn = sqlite3.connect('your_database.db')  # your actual DB
+        conn = sqlite3.connect('database.db')  # your actual DB
         cursor = conn.cursor()
         cursor.execute('SELECT id, username, email, role FROM users WHERE id = ?', (user_id,))
         user = cursor.fetchone()
