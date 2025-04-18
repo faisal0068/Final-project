@@ -168,6 +168,7 @@ def delete_user(user_id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        print(request.form)
         email = request.form['email'].strip().lower()
         password = request.form['password']
 
