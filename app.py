@@ -240,6 +240,36 @@ def update_email():
 
     return render_template('update_email.html')
 
+@app.route('/update_password', methods=['GET', 'POST'])
+@login_required
+def update_password():
+    if request.method == 'POST':
+        current_password = request.form['current_password']
+        new_password = request.form['new_password']
+        confirm_new_password = request.form['confirm_new_password']
+
+        if not check_password_hash(current_user.password_hash, current_password):
+            flash('Current password is incorrect.', 'danger')
+            return redirect(url_for('update_password'))
+
+        if new_password != confirm_new_password:
+            flash('New passwords do not match.', 'danger')
+            return redirect(url_for('update_password'))
+
+        if len(new_password) < 6:
+            flash('New password must be at least 6 characters long.', 'danger')
+            return redirect(url_for('update_password'))
+
+        # Update the password
+        hashed_password = generate_password_hash(new_password)
+        cursor = get_db().cursor()
+        cursor.execute('UPDATE users SET password = ? WHERE id = ?', (hashed_password, current_user.id))
+        get_db().commit()
+
+        flash('Password updated successfully!', 'success')
+        return redirect(url_for('profile'))
+
+    return render_template('update_password.html')
 
 
 @app.route('/logout')
