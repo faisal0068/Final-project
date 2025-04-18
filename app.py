@@ -26,6 +26,11 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(150), nullable=False, unique=True)
     password = db.Column(db.String(150), nullable=False)
     role = db.Column(db.String(50), nullable=False)
+# User loader
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 
 # Initialize DB tables if not already
 with app.app_context():
@@ -85,7 +90,6 @@ def login():
     return render_template('login.html')
 
 @app.route('/dashboard')
-@login_required
 def dashboard():
     return render_template('dashboard.html', username=current_user.username)
 
