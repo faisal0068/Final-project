@@ -6,4 +6,4 @@ services:
     startCommand: gunicorn app:app
     envVars:
       - key: SECRET_KEY
-        value: "yoursecretkeyhere"
+        value: "3d6576aa088c3c806bff9e02b3cff902c43c38b75c54fff24a53b236b324b535"

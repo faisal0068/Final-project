@@ -9,7 +9,7 @@ import sqlite3
 
 # Initialize app
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Required for session management and flashing messages
+app.secret_key = '3d6576aa088c3c806bff9e02b3cff902c43c38b75c54fff24a53b236b324b535'  # Required for session management and flashing messages
 
 
 def login_required(f):
