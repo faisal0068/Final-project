@@ -2,11 +2,15 @@ from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_user, login_required, current_user, logout_user
 from flask_migrate import Migrate
+from flask_bcrypt import Bcrypt
+
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+bcrypt = Bcrypt(app)
 
 # Setup LoginManager
 login_manager = LoginManager(app)
@@ -35,17 +39,21 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        email = request.form['email']  # Get the email from the form
         
         # Check if username already exists
         if User.query.filter_by(username=username).first():
             flash('Username already exists! Please choose another one.', 'danger')
+            return redirect(url_for('register'))
+        if User.query.filter_by(email=email).first():
+            flash('Email already exists! Please use another one.', 'danger')
             return redirect(url_for('register'))
         
         # Hash password
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
         
         # Create new user
-        new_user = User(username=username, password=hashed_password)
+        new_user = User(username=username, email=email, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
 
