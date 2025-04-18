@@ -31,7 +31,9 @@ class File(db.Model):
     saved_name = db.Column(db.String(120), nullable=False)
 
 # Create the tables in the database
-db.create_all()
+with app.app_context():
+    db.create_all()
+
 
 # Allowed file types
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
