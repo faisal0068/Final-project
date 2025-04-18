@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary">📂 My Files</h2>
+    
+    <!-- Search input -->
+    <input type="text" id="searchInput" class="form-control w-50" placeholder="Search files...">
+  </div>
+
+  <!-- Sort options -->
+  <div class="mb-4">
+    <select id="sortSelect" class="form-select w-25">
+      <option value="name">Sort by Name</option>
+      <option value="date">Sort by Upload Date</option>
+      <option value="type">Sort by File Type</option>
+    </select>
+  </div>
+
+  <!-- Files grid -->
+  <div class="row" id="filesContainer">
+    {% for file in files %}
+    <div class="col-md-4 mb-4 file-item" 
+         data-name="{{ file.filename | lower }}" 
+         data-date="{{ file.uploaded_at }}" 
+         data-type="{{ file.extension }}">
+      
+      <div class="card h-100 shadow-sm animate__animated animate__fadeInUp">
+        
+        {% if file.extension in ['jpg', 'jpeg', 'png'] %}
+          <img src="{{ url_for('uploaded_file', filename=file.filename, user_id=current_user.id) }}" class="card-img-top" style="object-fit: cover; height: 200px;">
+        {% else %}
+          <div class="text-center py-5">
+            <i class="fas {{ file.icon }} fa-4x text-muted"></i>
+            <p class="mt-2">{{ file.extension|upper }} File</p>
+          </div>
+        {% endif %}
+
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title text-truncate">{{ file.filename }}</h5>
+          <p class="card-text mb-1"><small class="text-muted">{{ file.size_mb }} MB</small></p>
+          <p class="card-text"><small class="text-muted">{{ file.uploaded_at }}</small></p>
+          <div class="mt-auto">
+            <a href="{{ url_for('uploaded_file', filename=file.filename, user_id=current_user.id) }}" class="btn btn-outline-primary btn-sm w-100 mb-2" download>⬇️ Download</a>
+            <button class="btn btn-danger btn-sm w-100" onclick="confirmDelete('{{ file.id }}')">🗑️ Delete</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- SweetAlert2 for Confirm Delete -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+// Live search
+const searchInput = document.getElementById('searchInput');
+const filesContainer = document.getElementById('filesContainer');
+
+searchInput.addEventListener('input', function() {
+  const keyword = this.value.toLowerCase();
+  document.querySelectorAll('.file-item').forEach(item => {
+    item.style.display = item.dataset.name.includes(keyword) ? 'block' : 'none';
+  });
+});
+
+// Confirm before delete
+function confirmDelete(fileId) {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: "This file will be permanently deleted!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      window.location.href = '/delete_file/' + fileId;
+    }
+  });
+}
+
+// Sorting
+const sortSelect = document.getElementById('sortSelect');
+sortSelect.addEventListener('change', function() {
+  const sortBy = this.value;
+  const items = Array.from(document.querySelectorAll('.file-item'));
+
+  items.sort((a, b) => {
+    if (sortBy === 'name') {
+      return a.dataset.name.localeCompare(b.dataset.name);
+    } else if (sortBy === 'date') {
+      return new Date(b.dataset.date) - new Date(a.dataset.date);
+    } else if (sortBy === 'type') {
+      return a.dataset.type.localeCompare(b.dataset.type);
+    }
+  });
+
+  items.forEach(item => filesContainer.appendChild(item));
+});
+</script>
+
+<style>
+  #searchInput {
+    transition: 0.3s;
+  }
+  #searchInput:focus {
+    box-shadow: 0 0 10px rgba(0,123,255,0.5);
+    border-color: #007bff;
+  }
+  select#sortSelect {
+    transition: 0.3s;
+  }
+  select#sortSelect:focus {
+    box-shadow: 0 0 10px rgba(0,123,255,0.5);
+    border-color: #007bff;
+  }
+</style>
+
+{% endblock %}

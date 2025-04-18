@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <h3 class="text-center text-success mb-4 animate__animated animate__fadeIn">☁️ Upload New File</h3>
+
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form method="POST" enctype="multipart/form-data" class="p-4 rounded shadow-sm animate__animated animate__fadeIn animate__delay-1s" style="background-color: #f8f9fa;">
+        
+        <div class="mb-3 text-center">
+          <label for="file" class="form-label">Choose a file to upload</label>
+          <input type="file" class="form-control input-animate" name="file" id="file" required>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100 btn-animate">Upload</button>
+      </form>
+
+      <div class="text-center mt-4 animate__animated animate__fadeIn animate__delay-2s">
+        <a href="{{ url_for('my_files') }}" class="btn btn-outline-primary">📂 View My Files</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+  .input-animate {
+    transition: transform 0.3s ease;
+  }
+  .input-animate:focus {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+  }
+  .btn-animate {
+    transition: transform 0.3s ease;
+  }
+  .btn-animate:hover {
+    transform: scale(1.05);
+    background-color: #28a745;
+  }
+</style>
+
+{% endblock %}

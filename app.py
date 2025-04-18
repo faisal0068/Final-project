@@ -287,6 +287,101 @@ def dashboard():
     
     return render_template('dashboard.html', username=session['username'])
 
+@app.route('/my_files')
+@login_required
+def my_files():
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('SELECT id, filename, uploaded_at FROM files WHERE user_id = ?', (current_user.id,))
+    files_data = cursor.fetchall()
+
+    files = []
+    for file in files_data:
+        extension = file['filename'].split('.')[-1].lower()
+        icon = get_icon_for_extension(extension)
+
+        user_folder = os.path.join('uploads', str(current_user.id))
+        filepath = os.path.join(user_folder, file['filename'])
+        
+        if os.path.exists(filepath):
+            size_bytes = os.path.getsize(filepath)
+            size_mb = round(size_bytes / (1024 * 1024), 2)  # Convert to MB
+        else:
+            size_mb = 0
+
+        files.append({
+            'id': file['id'],
+            'filename': file['filename'],
+            'uploaded_at': file['uploaded_at'],
+            'icon': icon,
+            'extension': extension,
+            'size_mb': size_mb
+        })
+
+    return render_template('my_files.html', files=files)
+
+def get_icon_for_extension(extension):
+    mapping = {
+        'pdf': 'fa-file-pdf',
+        'jpg': 'fa-file-image',
+        'jpeg': 'fa-file-image',
+        'png': 'fa-file-image',
+        'doc': 'fa-file-word',
+        'docx': 'fa-file-word',
+        'xls': 'fa-file-excel',
+        'xlsx': 'fa-file-excel',
+        'ppt': 'fa-file-powerpoint',
+        'pptx': 'fa-file-powerpoint',
+        'txt': 'fa-file-alt',
+        'zip': 'fa-file-archive',
+        'rar': 'fa-file-archive',
+    }
+    return mapping.get(extension, 'fa-file')  # Default icon
+
+
+
+@app.route('/upload_file', methods=['GET', 'POST'])
+@login_required
+def upload_file():
+    if request.method == 'POST':
+        file = request.files['file']
+        if file:
+            filename = secure_filename(file.filename)
+            user_folder = os.path.join(UPLOAD_FOLDER, str(current_user.id))
+            os.makedirs(user_folder, exist_ok=True)
+
+            file_path = os.path.join(user_folder, filename)
+            file.save(file_path)
+
+            cursor = get_db().cursor()
+            cursor.execute('INSERT INTO files (user_id, filename, uploaded_at) VALUES (?, ?, CURRENT_TIMESTAMP)', (current_user.id, filename))
+            get_db().commit()
+
+            flash('File uploaded successfully!', 'success')
+            return redirect(url_for('my_files'))
+
+    return render_template('upload_file.html')
+
+
+@app.route('/delete_file/<int:file_id>')
+@login_required
+def delete_file(file_id):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('SELECT filename FROM files WHERE id = ? AND user_id = ?', (file_id, current_user.id))
+    file = cursor.fetchone()
+
+    if file:
+        filepath = os.path.join('uploads', str(current_user.id), file['filename'])
+        if os.path.exists(filepath):
+            os.remove(filepath)
+
+        cursor.execute('DELETE FROM files WHERE id = ?', (file_id,))
+        db.commit()
+        flash('File deleted successfully!', 'success')
+
+    return redirect(url_for('my_files'))
+
 
 # ✅ Upload Route
 @app.route('/upload', methods=['POST'])
