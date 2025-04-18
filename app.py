@@ -2,10 +2,16 @@ from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user, UserMixin
 from werkzeug.utils import secure_filename
 import os
+import sqlite3 
 
 # Initialize app
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session management and flashing messages
+
+def get_db_connection():
+    conn = sqlite3.connect('database.db')  # Adjust path if needed
+    conn.row_factory = sqlite3.Row
+    return conn
 
 # Configurations
 UPLOAD_FOLDER = 'uploads'
@@ -35,6 +41,44 @@ def load_user(user_id):
 @app.route('/')
 def home():
     return render_template('index.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username'].strip()
+        email = request.form['email'].strip().lower()
+        password = request.form['password']
+
+        # Basic validation
+        if not username or not email or not password:
+            flash('Please fill out all fields.', 'danger')
+            return redirect(url_for('register'))
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Check if user already exists
+        cursor.execute('SELECT id FROM users WHERE email = ?', (email,))
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+            flash('Email already registered. Try logging in.', 'warning')
+            conn.close()
+            return redirect(url_for('register'))
+
+        # Insert new user
+        hashed_password = generate_password_hash(password)
+
+        cursor.execute('INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
+                       (username, email, hashed_password))
+        conn.commit()
+        conn.close()
+
+        flash('Registration successful! You can now log in.', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
