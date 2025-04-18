@@ -1,102 +1,81 @@
 from flask import Flask, render_template, redirect, url_for, request, flash
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin, LoginManager, login_user, login_required, current_user, logout_user
-from flask_migrate import Migrate
-from flask_bcrypt import Bcrypt
+from flask_login import LoginManager, login_required, login_user, logout_user, current_user, UserMixin
+from werkzeug.utils import secure_filename
+import os
 
-
+# Initialize app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-bcrypt = Bcrypt(app)
+app.secret_key = 'your_secret_key'  # Required for session management and flashing messages
 
-# Setup LoginManager
-login_manager = LoginManager(app)
+# Configurations
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Create uploads folder if it doesn't exist
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+# Setup login manager
+login_manager = LoginManager()
+login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-# User model
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(60), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)  # Add this line for email
+# Dummy User Class (you should replace this with your real User model)
+class User(UserMixin):
+    def __init__(self, id):
+        self.id = id
 
-
-# Load user function for login manager
+# Dummy user loader (replace with DB query)
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return User(user_id)
+
+# Routes
 
 @app.route('/')
-def index():
+def home():
     return render_template('index.html')
 
-# Register Route
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        email = request.form['email']  # Get the email from the form
-        
-        # Check if username already exists
-        if User.query.filter_by(username=username).first():
-            flash('Username already exists! Please choose another one.', 'danger')
-            return redirect(url_for('register'))
-        if User.query.filter_by(email=email).first():
-            flash('Email already exists! Please use another one.', 'danger')
-            return redirect(url_for('register'))
-        
-        # Hash password
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        
-        # Create new user
-        new_user = User(username=username, email=email, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-
-        # Auto-login after registration
-        login_user(new_user)
-        
-        flash('Account created successfully! You are now logged in.', 'success')
-        return redirect(url_for('dashboard'))
-
-    return render_template('register.html')
-
-# Login Route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # Dummy login (replace with your real login logic)
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        
-        user = User.query.filter_by(username=username).first()
-        
-        # Check if user exists and password matches
-        if user and bcrypt.check_password_hash(user.password, password):
-            login_user(user)
-            flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))
-        else:
-            flash('Login failed. Check username and/or password.', 'danger')
-    
+        user = User(id=1)
+        login_user(user)
+        return redirect(url_for('dashboard'))
     return render_template('login.html')
 
-# Dashboard Route (Protected)
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
+
 @app.route('/dashboard')
 @login_required
 def dashboard():
     return render_template('dashboard.html')
 
-# Logout Route
-@app.route('/logout')
+# ✅ Upload Route
+@app.route('/upload', methods=['POST'])
 @login_required
-def logout():
-    logout_user()
-    flash('You have been logged out.', 'info')
-    return redirect(url_for('index'))
+def upload():
+    if 'file' not in request.files:
+        flash('No file part', 'error')
+        return redirect(url_for('dashboard'))
+    
+    file = request.files['file']
+    
+    if file.filename == '':
+        flash('No selected file', 'error')
+        return redirect(url_for('dashboard'))
+    
+    if file:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        flash('File uploaded successfully!', 'success')
+    
+    return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     app.run(debug=True)
