@@ -78,6 +78,11 @@ def load_user(user_id):
 
 # Routes
 
+@app.route("/")
+def home():
+    return "Hello, Waitress + Flask!"
+
+
 @app.route('/')
 def home():
     return render_template('index.html')
