@@ -1,12 +1,26 @@
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user, UserMixin
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash
+from functools import wraps
+from flask import session, redirect, url_for, flash
 import os
 import sqlite3 
 
 # Initialize app
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session management and flashing messages
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('You need to log in first.', 'warning')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 def get_db_connection():
     conn = sqlite3.connect('database.db')  # Adjust path if needed
@@ -39,6 +53,7 @@ def load_user(user_id):
 # Routes
 
 @app.route('/')
+@login_required
 def home():
     return render_template('index.html')
 
@@ -82,23 +97,50 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # Dummy login (replace with your real login logic)
     if request.method == 'POST':
-        user = User(id=1)
-        login_user(user)
-        return redirect(url_for('dashboard'))
+        email = request.form['email'].strip().lower()
+        password = request.form['password']
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
+        user = cursor.fetchone()
+        conn.close()
+
+        if user:
+            stored_password = user['password']
+            if check_password_hash(stored_password, password):
+                # Password correct
+                session['user_id'] = user['id']
+                session['username'] = user['username']
+                flash('Logged in successfully!', 'success')
+                return redirect(url_for('dashboard'))  # Redirect to a protected page
+            else:
+                flash('Incorrect password.', 'danger')
+        else:
+            flash('Email not found. Please register.', 'warning')
+        
+        return redirect(url_for('login'))
+
     return render_template('login.html')
 
+
 @app.route('/logout')
-@login_required
 def logout():
-    logout_user()
-    return redirect(url_for('home'))
+    session.clear()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('login'))
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+    if 'user_id' not in session:
+        flash('Please log in first.', 'danger')
+        return redirect(url_for('login'))
+    
+    return render_template('dashboard.html', username=session['username'])
+
 
 # ✅ Upload Route
 @app.route('/upload', methods=['POST'])
