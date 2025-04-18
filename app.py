@@ -90,8 +90,10 @@ def login():
     return render_template('login.html')
 
 @app.route('/dashboard')
+@login_required
 def dashboard():
     return render_template('dashboard.html', username=current_user.username)
+
 
 @app.route('/logout')
 def logout():
@@ -154,7 +156,9 @@ if not os.path.exists(UPLOAD_FOLDER):
 @app.route('/my_files')
 @login_required
 def my_files():
-    files = os.listdir(os.path.join(UPLOAD_FOLDER, str(current_user.id)))
+    user_folder = os.path.join(UPLOAD_FOLDER, str(current_user.id))
+    os.makedirs(user_folder, exist_ok=True)  # Create if doesn't exist
+    files = os.listdir(user_folder)
     return render_template('my_files.html', files=files)
 
 @app.route('/upload_file', methods=['GET', 'POST'])
