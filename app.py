@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from flask_sqlalchemy import SQLAlchemy
+from flask import send_from_directory
 
 
 # Initialize app
@@ -132,6 +133,22 @@ def edit_user(user_id):
         return redirect(url_for('admin_dashboard'))
 
     return render_template('edit_user.html', user=user)
+
+@app.route('/download_file/<filename>')
+@login_required
+def download_file(filename):
+    user_folder = os.path.join(app.config['UPLOAD_FOLDER'], str(current_user.id))
+    try:
+        return send_from_directory(user_folder, filename, as_attachment=True)
+    except FileNotFoundError:
+        flash('File not found.', 'danger')
+        return redirect(url_for('my_files'))
+@app.route('/preview/<filename>')
+@login_required
+def preview_file(filename):
+    user_folder = os.path.join(app.config['UPLOAD_FOLDER'], str(current_user.id))
+    return send_from_directory(user_folder, filename)
+
 
 @app.route('/admin/delete/<int:user_id>')
 @login_required

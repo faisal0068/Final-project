@@ -26,11 +26,13 @@
          data-name="{{ file.filename | lower }}" 
          data-date="{{ file.uploaded_at }}" 
          data-type="{{ file.extension }}">
-      
+
       <div class="card h-100 shadow-sm animate__animated animate__fadeInUp">
-        
-        {% if file.extension in ['jpg', 'jpeg', 'png'] %}
-          <img src="{{ url_for('uploaded_file', filename=file.filename, user_id=current_user.id) }}" class="card-img-top" style="object-fit: cover; height: 200px;">
+
+        {% if file.extension in ['jpg', 'jpeg', 'png', 'gif', 'webp'] %}
+          <a href="{{ url_for('preview_file', filename=file.filename) }}" target="_blank">
+            <img src="{{ url_for('preview_file', filename=file.filename) }}" class="card-img-top" style="object-fit: cover; height: 200px;">
+          </a>
         {% else %}
           <div class="text-center py-5">
             <i class="fas {{ file.icon }} fa-4x text-muted"></i>
@@ -43,7 +45,7 @@
           <p class="card-text mb-1"><small class="text-muted">{{ file.size_mb }} MB</small></p>
           <p class="card-text"><small class="text-muted">{{ file.uploaded_at | date("Y-m-d") }}</small></p>
           <div class="mt-auto">
-            <a href="{{ url_for('uploaded_file', filename=file.filename, user_id=current_user.id) }}" class="btn btn-outline-primary btn-sm w-100 mb-2" download>⬇️ Download</a>
+            <a href="{{ url_for('download_file', filename=file.filename) }}" class="btn btn-outline-primary btn-sm w-100 mb-2" download>⬇️ Download</a>
             <button class="btn btn-danger btn-sm w-100" onclick="confirmDelete('{{ file.id }}')" aria-label="Delete file">🗑️ Delete</button>
           </div>
         </div>
