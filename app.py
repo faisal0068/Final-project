@@ -48,6 +48,19 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        # get form data
+        username = request.form['username']
+        password = request.form['password']
+        
+        # (your logic to verify username and password)
+
+        if username == 'admin' and password == 'admin':  # example login check
+            session['user'] = username
+            return redirect(url_for('profile'))  # <-- redirect to profile page after login
+        else:
+            return render_template('login.html', error='Invalid credentials')
+    
     return render_template('login.html')
     
 
