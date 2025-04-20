@@ -3,6 +3,8 @@ from flask_login import LoginManager, login_required, login_user, logout_user, c
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+from flask_sqlalchemy import SQLAlchemy
+
 
 # Initialize app
 app = Flask(__name__)
