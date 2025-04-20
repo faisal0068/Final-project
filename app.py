@@ -44,6 +44,11 @@ with app.app_context():
 def home():
     return render_template('index.html')
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    return render_template('login.html')
+    
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -118,6 +123,7 @@ def download_file(filename):
     except FileNotFoundError:
         flash('File not found.', 'danger')
         return redirect(url_for('my_files'))
+
 @app.route('/preview/<filename>')
 @login_required
 def preview_file(filename):
