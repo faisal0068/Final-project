@@ -5,6 +5,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from flask_sqlalchemy import SQLAlchemy
 from flask import send_from_directory
+from datetime import datetime
+
 
 
 # Initialize app
@@ -192,9 +194,16 @@ def delete_file(filename):
 
 # User settings and profile routes
 @app.route('/profile')
-@login_required
 def profile():
-    return render_template('profile.html')
+    # Dummy user data, replace with actual database queries later
+    user = {
+        'username': 'John Doe',
+        'email': 'john@example.com',
+        'files_count': 25,
+        'storage_used': 120,  # in MB
+        'join_date': datetime(2024, 1, 15)
+    }
+    return render_template('profile.html', user=user)
 
 @app.route('/update_email', methods=['GET', 'POST'])
 @login_required
