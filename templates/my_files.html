@@ -41,10 +41,10 @@
         <div class="card-body d-flex flex-column">
           <h5 class="card-title text-truncate">{{ file.filename }}</h5>
           <p class="card-text mb-1"><small class="text-muted">{{ file.size_mb }} MB</small></p>
-          <p class="card-text"><small class="text-muted">{{ file.uploaded_at }}</small></p>
+          <p class="card-text"><small class="text-muted">{{ file.uploaded_at | date("Y-m-d") }}</small></p>
           <div class="mt-auto">
             <a href="{{ url_for('uploaded_file', filename=file.filename, user_id=current_user.id) }}" class="btn btn-outline-primary btn-sm w-100 mb-2" download>⬇️ Download</a>
-            <button class="btn btn-danger btn-sm w-100" onclick="confirmDelete('{{ file.id }}')">🗑️ Delete</button>
+            <button class="btn btn-danger btn-sm w-100" onclick="confirmDelete('{{ file.id }}')" aria-label="Delete file">🗑️ Delete</button>
           </div>
         </div>
 

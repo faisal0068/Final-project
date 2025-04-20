@@ -1,4 +1,78 @@
-/* Toggle Button Styles */
+/* General Styles for Dark and Light Mode */
+body, .navbar, footer, .modal-content, .table th {
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Default Light Mode Styles */
+body {
+  background-color: #f8f9fa; /* Light background */
+  color: #212529; /* Dark text */
+}
+
+.navbar {
+  background-color: #ffffff; /* Light navbar */
+}
+
+footer {
+  background-color: #f1f1f1; /* Light footer */
+}
+
+.modal-content {
+  background-color: #ffffff; /* Light modal */
+}
+
+.table th {
+  background-color: #f8f9fa; /* Table headers */
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+  background-color: #121212; /* Dark background */
+  color: white; /* Light text */
+}
+
+body.dark-mode .navbar {
+  background-color: #333; /* Dark navbar */
+}
+
+body.dark-mode footer {
+  background-color: #333; /* Dark footer */
+}
+
+body.dark-mode .modal-content {
+  background-color: #444; /* Dark modal background */
+}
+
+body.dark-mode .table th {
+  background-color: #444; /* Dark table headers */
+}
+
+body.dark-mode .btn, body.dark-mode .form-control {
+  background-color: #555; /* Dark buttons and inputs */
+  color: white; /* Light text */
+}
+
+/* Button Animations */
+.btn-animate {
+  transition: transform 0.3s ease;
+}
+
+.btn-animate:hover {
+  transform: scale(1.05);
+  background-color: #0056b3;
+}
+
+/* Input Animations */
+.input-animate {
+  transition: transform 0.3s ease;
+}
+
+.input-animate:focus {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+}
+
+/* Theme Toggle Button */
 .theme-toggle {
   position: fixed;
   bottom: 20px;
@@ -24,7 +98,6 @@
   transform: scale(1.1);
 }
 
-/* Smooth background transition for body, navbar, footer, modals */
-body, .navbar, footer, .modal-content, .table th {
-  transition: background-color 0.4s ease, color 0.4s ease;
+.theme-toggle:focus {
+  outline: none;
 }

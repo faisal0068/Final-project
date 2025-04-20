@@ -17,7 +17,7 @@
             <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
             <p class="mb-2">Drag & drop your file here</p>
             <p class="small text-muted">or click to browse</p>
-            <input type="file" class="form-control d-none" id="file" name="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx,.txt" required>
+            <input type="file" class="form-control d-none" id="file" name="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx,.txt" required aria-label="Select file to upload">
           </div>
 
           <!-- Selected File Name -->
@@ -48,8 +48,23 @@
 
   // Update filename on select
   fileInput.addEventListener('change', function () {
-    if (fileInput.files.length > 0) {
-      fileChosen.textContent = `Selected: ${fileInput.files[0].name}`;
+    const file = fileInput.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    const maxSize = 10 * 1024 * 1024; // 10MB file size limit
+
+    if (file && !allowedTypes.includes(file.type)) {
+      alert('Please upload a valid file type (JPEG, PNG, PDF, DOC, DOCX).');
+      fileInput.value = ''; // Clear the input
+      fileChosen.textContent = ''; // Clear the chosen file name
+      return;
+    }
+
+    if (file && file.size > maxSize) {
+      alert('File size exceeds the 10MB limit.');
+      fileInput.value = ''; // Clear the input
+      fileChosen.textContent = ''; // Clear the chosen file name
+    } else {
+      fileChosen.textContent = `Selected: ${file.name}`;
     }
   });
 
@@ -70,4 +85,17 @@
     fileChosen.textContent = `Selected: ${fileInput.files[0].name}`;
     dropArea.classList.remove('bg-light');
   });
+
+  // Reset file input when modal is closed
+  const modal = new bootstrap.Modal(document.getElementById('uploadModal'));
+  modal.addEventListener('hidden.bs.modal', () => {
+    fileInput.value = '';
+    fileChosen.textContent = '';
+  });
 </script>
+
+<style>
+  #drop-area.bg-light {
+    border: 2px dashed #007bff;
+  }
+</style>

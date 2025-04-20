@@ -1,18 +1,11 @@
 import os
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'supersecretkey'
-    UPLOAD_FOLDER = 'static/uploads'
-    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'docx', 'mp4'}
-    MAX_CONTENT_LENGTH = 1000 * 1024 * 1024  # 1000MB limit
-import os
-
-class Config:
     """
     Configuration class for Flask application.
     Handles secret key, file upload settings, and other configurations.
     """
-    
+
     # Secret key for securing sessions and other security-related operations
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'supersecretkey'
 
@@ -24,7 +17,7 @@ class Config:
 
     # Max content length for uploads (200MB)
     MAX_CONTENT_LENGTH = 200 * 1024 * 1024  # 200MB limit
-    
+
     # Additional configurations for file storage
     STORAGE_PATH = os.path.join(os.getcwd(), 'storage')  # Path for general storage (separate from static uploads)
 
@@ -56,10 +49,11 @@ class Config:
         Set up the necessary directories for file uploads and storage.
         This will ensure that both the upload folder and storage directory exist.
         """
+        # Create main upload folder and storage directory
         Config.create_directory(Config.UPLOAD_FOLDER)
         Config.create_directory(Config.STORAGE_PATH)
+
+        # If subdirectories are allowed, create a specific directory for user uploads
         if Config.ALLOW_CREATE_DIRECTORIES:
-            # Example: You can enable users to create subfolders here
-            # by checking and creating their custom directories.
             user_upload_dir = os.path.join(Config.UPLOAD_FOLDER, 'user_uploads')
             Config.create_directory(user_upload_dir)

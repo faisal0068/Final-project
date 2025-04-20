@@ -11,14 +11,50 @@
             </div>
             <div class="mb-3">
                 <label>Email</label>
-                <input type="email" class="form-control" name="email" required>
+                <input type="email" class="form-control" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Enter a valid email address">
             </div>
             <div class="mb-3">
                 <label>Password</label>
-                <input type="password" class="form-control" name="password" required>
+                <input type="password" class="form-control" name="password" id="password" required>
+                <small id="passwordHelp" class="form-text text-muted">Password must be at least 8 characters long and contain a number and a special character.</small>
+            </div>
+            <div class="mb-3">
+                <label>Confirm Password</label>
+                <input type="password" class="form-control" name="confirm_password" id="confirm_password" required>
             </div>
             <button type="submit" class="btn btn-primary">Register</button>
         </form>
     </div>
 </div>
+
+<!-- Password Validation Script -->
+<script>
+  const passwordInput = document.getElementById('password');
+  const confirmPasswordInput = document.getElementById('confirm_password');
+  
+  confirmPasswordInput.addEventListener('input', function() {
+    const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+    if (password !== confirmPassword) {
+      confirmPasswordInput.setCustomValidity("Passwords don't match!");
+    } else {
+      confirmPasswordInput.setCustomValidity('');
+    }
+  });
+
+  // Password strength check
+  passwordInput.addEventListener('input', function() {
+    const password = passwordInput.value;
+    const regex = /^(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+    const helpText = document.getElementById('passwordHelp');
+    if (!regex.test(password)) {
+      helpText.style.color = 'red';
+      helpText.textContent = 'Password does not meet the required criteria!';
+    } else {
+      helpText.style.color = 'green';
+      helpText.textContent = 'Password is strong!';
+    }
+  });
+</script>
+
 {% endblock %}

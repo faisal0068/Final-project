@@ -7,3 +7,11 @@ services:
     envVars:
       - key: SECRET_KEY
         value: "3d6576aa088c3c806bff9e02b3cff902c43c38b75c54fff24a53b236b324b535"
+    
+
+    healthCheck:
+      path: "/health"
+      port: 8000
+      intervalSeconds: 30
+      timeoutSeconds: 5
+      retries: 3

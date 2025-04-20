@@ -10,10 +10,15 @@
         
         <div class="mb-3 text-center">
           <label for="file" class="form-label">Choose a file to upload</label>
-          <input type="file" class="form-control input-animate" name="file" id="file" required>
+          <input type="file" class="form-control input-animate" name="file" id="file" aria-label="Choose a file to upload" required>
         </div>
 
-        <button type="submit" class="btn btn-success w-100 btn-animate">Upload</button>
+        <button type="submit" class="btn btn-success w-100 btn-animate" id="submitBtn">
+          <span id="submitText">Upload</span>
+          <div class="spinner-border spinner-border-sm text-light" id="loadingSpinner" style="display: none;" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
       </form>
 
       <div class="text-center mt-4 animate__animated animate__fadeIn animate__delay-2s">
@@ -26,20 +31,67 @@
 <!-- Animate.css -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
+<!-- Custom JavaScript for File Validation -->
+<script>
+document.getElementById('file').addEventListener('change', function(event) {
+  const file = event.target.files[0];
+  const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];  // Add more types as needed
+  const maxSize = 10 * 1024 * 1024;  // 10MB file size limit
+
+  if (file && !allowedTypes.includes(file.type)) {
+    alert('Please upload a valid file type (JPEG, PNG, PDF).');
+    event.target.value = '';  // Clear the input
+    return;
+  }
+
+  if (file && file.size > maxSize) {
+    alert('File size exceeds 10MB limit.');
+    event.target.value = '';  // Clear the input
+  }
+});
+
+document.getElementById('updateFileForm').addEventListener('submit', function(event) {
+  const submitText = document.getElementById('submitText');
+  const loadingSpinner = document.getElementById('loadingSpinner');
+  submitText.style.display = 'none';
+  loadingSpinner.style.display = 'inline-block';
+});
+</script>
+
 <style>
   .input-animate {
     transition: transform 0.3s ease;
   }
+
   .input-animate:focus {
     transform: scale(1.05);
     box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
   }
+
   .btn-animate {
     transition: transform 0.3s ease;
   }
+
   .btn-animate:hover {
     transform: scale(1.05);
     background-color: #28a745;
+  }
+
+  .btn-animate:focus {
+    transform: scale(1.05);
+    background-color: #218838;
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.7);
+  }
+
+  form {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-label {
+    font-weight: bold;
   }
 </style>
 
