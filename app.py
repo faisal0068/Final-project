@@ -47,49 +47,24 @@ def home():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username'].strip()
-        email = request.form['email'].strip().lower()
-        password = request.form['password']
-
-        # Basic validation
-        if not username or not email or not password:
-            flash('Please fill out all fields.', 'danger')
-            return redirect(url_for('register'))
-
-        # Check if user already exists
+        username = request.form['username']
+        email = request.form['email']
+        password = generate_password_hash(request.form['password'])
+        
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
-            flash('Email already registered. Try logging in.', 'warning')
+            flash('Email already exists. Please login or use a different email.', 'danger')
             return redirect(url_for('register'))
-
-        # Insert new user
-        hashed_password = generate_password_hash(password)
-        new_user = User(username=username, email=email, password=hashed_password, role='user')
+        
+        new_user = User(username=username, email=email, password=password, role='user')
         db.session.add(new_user)
         db.session.commit()
 
-        flash('Registration successful! You can now log in.', 'success')
+        flash('Registration successful! You can now login.', 'success')
         return redirect(url_for('login'))
 
     return render_template('register.html')
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form['email'].strip().lower()
-        password = request.form['password']
-
-        user = User.query.filter_by(email=email).first()
-
-        if user and check_password_hash(user.password, password):
-            login_user(user)
-            flash('Logged in successfully!', 'success')
-            return redirect(url_for('dashboard'))  # Redirect to a protected page
-        else:
-            flash('Incorrect email or password.', 'danger')
-        return redirect(url_for('login'))
-
-    return render_template('login.html')
 
 @app.route('/dashboard')
 @login_required
